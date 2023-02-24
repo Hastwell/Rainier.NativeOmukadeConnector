@@ -7,8 +7,11 @@ using System.Text;
 namespace Rainier.NativeOmukadeConnector.Patches
 {
     [HarmonyPatch(typeof(GameSettingsEndpoint), "Initialize")]
-    internal static class ZZZHeadcrabUpdateChecker
+    internal static class DumpGameSettingsManifest
     {
+        [HarmonyPrepare]
+        static bool Prepare() => Plugin.Settings.DumpManifestFileUrl;
+
         [HarmonyPrefix]
         static void Prefix()
         {

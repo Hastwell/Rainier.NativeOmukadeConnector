@@ -10,5 +10,6 @@ namespace Rainier.NativeOmukadeConnector
         public bool ForceFriendsToBeOnline = false;
         public bool EnableAllCosmetics = false;
         public bool ForceAllLegalityChecksToSucceed = false;
+        public bool DumpManifestFileUrl = false;
     }
 }
