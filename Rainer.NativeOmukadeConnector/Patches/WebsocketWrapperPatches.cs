@@ -1,0 +1,245 @@
+﻿using _Rainier.Scripts.Managers.StartUp;
+using HarmonyLib;
+using Newtonsoft.Json;
+using Platform.Sdk;
+using Platform.Sdk.Codecs;
+using Platform.Sdk.Models;
+using Platform.Sdk.Models.GameServer;
+using Platform.Sdk.Models.Matchmaking;
+using Platform.Sdk.Models.Query;
+using Platform.Sdk.Models.User;
+using Platform.Sdk.Models.WebSocket;
+using Rainer.NativeOmukadeConnector.Messages;
+using RainierClientSDK;
+using RainierClientSDK.Inventory;
+using SharedLogicUtils.DataTypes;
+using SharedLogicUtils.source.Services.Query.Contexts;
+using System;
+using System.Collections.Generic;
+using System.IO;
+using System.Linq;
+using System.Net;
+using System.Reflection;
+using System.Reflection.Emit;
+using System.Text;
+using System.Threading;
+using System.Threading.Tasks;
+using TPCI.Commands;
+using TPCI.Localization;
+
+namespace Rainer.NativeOmukadeConnector.Patches
+{
+    internal static class WswCommon
+    {
+
+        internal static Assembly platformSdkAssembly = typeof(WebSocketSettings).Assembly;
+        internal static Type wswType = platformSdkAssembly.GetType("Platform.Sdk.WebsocketWrapper");
+
+        internal static MethodInfo _SendCommandGeneric = wswType.GetMethod("SendCommand", BindingFlags.Instance | BindingFlags.Public);
+
+        internal static MethodInfo _SetNetworkChangeStatus = wswType.GetMethod("SetNetworkChangeStatus", BindingFlags.Instance | BindingFlags.NonPublic);
+
+        internal static ICodec JsonCodec = (ICodec) platformSdkAssembly.GetType("Platform.Sdk.Codecs.CodecUtil").GetMethod("Codec", BindingFlags.Static | BindingFlags.Public).Invoke(null, new object[] { SerializationFormat.JSON });
+
+        /*
+        public static void SetNetworkChangeStatus(object parentWswInstance, NetworkStatus newStatus) => _SetNetworkChangeStatus.Invoke(parentWswInstance, new object[] { newStatus });
+        public static void SetNetworkChangeStatus(NetworkStatus newStatus) => SetNetworkChangeStatus(wswInstance, newStatus);
+        */
+
+        internal static object? wswInstance = null;
+        //internal static Lazy<string> cachedAccountId = new Lazy<string>(() => ResolveClient().AccountId, isThreadSafe: true);
+
+        internal static Client ResolveClient()
+        {
+            Delegate dispatcher = (Delegate)wswInstance.GetType().GetField("_dispatcher", BindingFlags.Instance | BindingFlags.NonPublic).GetValue(wswInstance);
+            Client clientTarget = (Client)dispatcher.Target;
+            return clientTarget;
+        }
+
+        /// <summary>
+        /// Injects a message into the current WebsocketWrapper. If hooking OnOpen, use <see cref="InjectUpsockMessageBypassingConnectionCheck"/> due to not-yet-set fields preventing transmission.
+        /// </summary>
+        internal static void InjectUpsockMessage<T>(object wswWrapper, T message) where T : class
+        {
+            Command<T> commandToSend = new Command<T>("/omukade10/sdm", reliable: false);
+            WswCommon._SendCommandGeneric.MakeGenericMethod(typeof(T)).Invoke(wswWrapper, new object[] { commandToSend, message });
+        }
+
+        /// <summary>
+        /// Injects a message into the current WebsocketWrapper. If hooking OnOpen, use <see cref="InjectUpsockMessageBypassingConnectionCheck"/> due to not-yet-set fields preventing transmission.
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
+        /// <param name="client"></param>
+        /// <param name="message"></param>
+        internal static void InjectUpsockMessage<T>(Client client, T message) where T : class
+            => InjectUpsockMessage<T>(Traverse.Create(client).Field("_ws").GetValue(), message);
+
+        /// <summary>
+        /// Forces the WebsocketWrapper to think it's connected for purposes of WebsocketWrapper.SendCommand. If hooking WebsocketClient.OnOpen, this field is not yet set and messages will fail to send.
+        /// </summary>
+        /// <param name="client"></param>
+        internal static void ForceIsConnectedOnWsw(Client client)
+            => Traverse.Create(client).Field("_ws").Field("_connected").SetValue(true);
+    }
+
+    [HarmonyPatch]
+    public static class HttpRouter_WebsocketEndpoint
+    {
+        static IEnumerable<MethodBase> TargetMethods()
+        {
+            return Enumerable.Repeat(WswCommon.platformSdkAssembly.GetType("Platform.Sdk.HttpRouter").GetMethod("WebsocketEndpoint", BindingFlags.Instance | BindingFlags.Public), 1);
+        }
+
+        static bool Prefix(Platform.Sdk.Route ____route, ref Uri __result)
+        {
+            string endpointToUse = Plugin.Settings.OmukadeEndpoint + "/websocket/v1/external/stomp";
+            Plugin.SharedLogger.LogInfo($"Rewriting Websocket route from \"{____route.WebsocketUrl}\" to \"{endpointToUse}\"");
+            __result = new Uri(endpointToUse);
+            return false;
+        }
+    }
+
+    [HarmonyPatch]
+    static class Wsw_SendCommand
+    {
+        static IEnumerable<MethodBase> TargetMethods()
+        {
+            Type[] allKnownCommands = new Type[] {
+                typeof(BeginMatchmaking),
+                typeof(CancelMatchmaking),
+                //typeof(GameMessage),
+                //typeof(CancelDirectMatch),
+                typeof(ProposeDirectMatch),
+                typeof(AcceptDirectMatch),
+
+                typeof(Platform.Sdk.Models.Account.SessionUpdatePayload),
+                typeof(SessionStart),
+                typeof(SupplementalDataMessageV2),
+                //typeof(PingPayload),
+                //typeof(HeartbeatPayload),
+            };
+
+            return allKnownCommands.Select(typeUsed => WswCommon.wswType.GetMethod("SendCommand", BindingFlags.Instance | BindingFlags.Public).MakeGenericMethod(typeUsed));
+        }
+
+        [HarmonyPrefix]
+        public static bool InjectSdmMessagesToMatchmakingMessages(object __instance, ref object command, ref object body)
+        {
+            if (body is Platform.Sdk.Models.Account.SessionUpdatePayload || body is SessionStart)
+            {
+                Plugin.SharedLogger.LogInfo($"Intentionally swallowing sensitive message {body.GetType().Name} that shouldn't be sent to Omukade.");
+                return false;
+            }
+
+            // Don't process our own SDM; just pass it along to Omukade
+            if (body is SupplementalDataMessageV2)
+            {
+                //Plugin.SharedLogger.LogWarning($"Skipping processing of our own SupplementalDataMessage; the TargetMethods filter shouldn't be catching this message type.");
+                return true;
+            }
+
+            string deckId = null;
+
+            // If it relates to starting a game, decode the deck ID
+            if (body is BeginMatchmaking bm)
+            {
+                MatchmakingContext mc = JsonConvert.DeserializeObject<MatchmakingContext>(System.Text.Encoding.UTF8.GetString(bm.context));
+                deckId = mc.deckID;
+            }
+            else if (body is ProposeDirectMatch pdm)
+            {
+                FriendDirectMatchContext fdmc = JsonConvert.DeserializeObject<FriendDirectMatchContext>(System.Text.Encoding.UTF8.GetString(pdm.context));
+                deckId = fdmc.deckID;
+            }
+            else if (body is AcceptDirectMatch adm)
+            {
+                FriendDirectMatchContext fdmc = JsonConvert.DeserializeObject<FriendDirectMatchContext>(System.Text.Encoding.UTF8.GetString(adm.context));
+                deckId = fdmc.deckID;
+            }
+
+            if (deckId != null && ReferenceGetters.collectionServiceReference != null)
+            {
+                Plugin.SharedLogger.LogInfo("Packet includes a Deck ID; fetching deck details to inject SDM...");
+                CollectionData deckListCollection = ReferenceGetters.collectionServiceReference.GetCollectionAsync(service: new PlatformInventoryService(WswCommon.ResolveClient(), null, null), deckId).Result;
+
+                SupplementalDataMessageV2 sdm = new SupplementalDataMessageV2 { DeckInformation = deckListCollection, OutfitInformation = InventoryService.currentOutfit, CurrentRegion = WswCommon.ResolveClient().CurrentRegion };
+                WswCommon.InjectUpsockMessage(__instance, sdm);
+            }
+
+            return true;
+        }
+    }
+
+    [HarmonyPatch]
+    static class Wsw_CreateWebsocket
+    {
+        static IEnumerable<MethodBase> TargetMethods()
+        {
+            return Enumerable.Repeat(WswCommon.wswType.GetMethod("CreateWebsocket", BindingFlags.Instance | BindingFlags.NonPublic), 1);
+        }
+
+        [HarmonyPatch]
+        [HarmonyPostfix]
+        static void Postfix(object __instance, object __result)
+        {
+            WswCommon.wswInstance = __instance;
+
+            // result is WebsocketClient, a private type
+            Type wsOpenEventHandlerType = WswCommon.platformSdkAssembly
+            .GetType("Platform.Sdk.WebsocketClient")
+            .GetNestedType("WebSocketOpenEventHandler");
+
+            EventInfo onOpenEvent = WswCommon.platformSdkAssembly
+            .GetType("Platform.Sdk.WebsocketClient")
+            .GetEvent("OnOpen");
+
+            Client parentClient = Traverse.Create(__instance).Field("_dispatcher").GetValue<Delegate>().Target as Client;
+
+            Delegate onOpenHandler = Delegate.CreateDelegate(wsOpenEventHandlerType, new OnOpenEventHandlerDelegate { parentClient = parentClient }, nameof(OnOpenEventHandlerDelegate.FireEvent));
+            onOpenEvent.AddEventHandler(__result, onOpenHandler);
+        }
+
+        private class OnOpenEventHandlerDelegate
+        {
+            internal Client parentClient;
+
+            internal void FireEvent()
+            {
+                string screenName = ManagerSingleton<LoginManager>.instance.loginData.UserData.screen_name;
+
+                System.Threading.Thread.Sleep(250 /*ms*/);
+                Plugin.SharedLogger.LogMessage($"Sending SDM[screenname={screenName},playerid={parentClient.AccountId}]");
+                try
+                {
+                    WswCommon.ForceIsConnectedOnWsw(parentClient);
+                    WswCommon.InjectUpsockMessage(client: parentClient, new SupplementalDataMessageV2 { PlayerDisplayName = screenName, PlayerId = parentClient.AccountId });
+                }
+                catch(Exception e)
+                {
+                    BetterExceptionLogger.LogException(e);
+                    throw;
+                }
+            }
+        }
+    }
+    /*[HarmonyPatch]
+    public static class Wsw_SendCommand_Swallow
+    {
+        static IEnumerable<MethodBase> TargetMethods()
+        {
+            Type[] allKnownCommands = new Type[] {
+                typeof(Platform.Sdk.Models.Account.SessionUpdatePayload),
+                typeof(SessionStart),
+                typeof(PingPayload),
+                typeof(HeartbeatPayload),
+            };
+
+            return allKnownCommands.Select(typeUsed => WswCommon.wswType.GetMethod("SendCommand", BindingFlags.Instance | BindingFlags.Public).MakeGenericMethod(typeUsed));
+        }
+
+        static IEnumerable<CodeInstruction> Transpiler()
+        {
+            yield return new CodeInstruction(OpCodes.Ret);
+        }
+    }*/
+}
