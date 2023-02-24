@@ -1,9 +1,9 @@
-﻿# Rainer Native Omukade Connector
+﻿# Rainier Native Omukade Connector
 ![logo](noc-logo.png)
 
 **If you're looking to play with others on an Omukade server, this is all you need.**
 
-This is a BepInEx plugin for the Pokemon TCG Live software (codename "Rainer") that patches the game
+This is a BepInEx plugin for the Pokemon TCG Live software (codename "Rainier") that patches the game
 to connect to a server running an Omukade-family server (eg, Omukade Cheyenne) instead of offical servers.
 
 ## Requirements
@@ -19,7 +19,7 @@ Start the game using the TCGL Omukade shortcut (or using the command line `--ena
 Without either of these, the plugin will assume you want to connect to the offical game servers and disable itself without doing anything.
 
 ### Compatable Servers
-Rainer NOC is compatable with the following server implementations:
+Rainier NOC is compatable with the following server implementations:
 * Omukade Cheyenne
 * Offical TCGL Servers (when not opting-in to Omukade use via command-line)
 
@@ -55,7 +55,7 @@ Some details are specifically **not** sent:
 * PII from information the game retreives from the Pokemon Organized Play API. (This can include your real name and information about child accounts attached to yours.)
 
 ## Game Updates
-Game updates do not appear to affect Rainer NOC, other BepInEx plugins, or BepInEx itself. However,
+Game updates do not appear to affect Rainier NOC, other BepInEx plugins, or BepInEx itself. However,
 game updates can and have introduced incompatibilities with the patches this tool makes.
 
 ## Compiling

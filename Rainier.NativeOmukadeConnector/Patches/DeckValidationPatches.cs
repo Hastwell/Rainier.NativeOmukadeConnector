@@ -8,7 +8,7 @@ using System.Collections.Generic;
 using System.Text;
 using static SharedSDKUtils.DeckValidation.DeckValidationService;
 
-namespace Rainer.NativeOmukadeConnector.Patches
+namespace Rainier.NativeOmukadeConnector.Patches
 {
     [HarmonyPatch(typeof(DeckValidationService), nameof(DeckValidationService.ValidateDeck), typeof(RulesFormat), typeof(Dictionary<string, int>), typeof(DeckInfo), typeof(IQueryableCardDatabase), typeof(IConfigLoader))]
     static class DeckValidationAlwaysIgnoreUnowned

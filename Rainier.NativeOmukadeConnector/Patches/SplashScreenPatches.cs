@@ -7,7 +7,7 @@ using System.Reflection.Emit;
 using System.Text;
 using UnityEngine.Events;
 
-namespace Rainer.NativeOmukadeConnector.Patches
+namespace Rainier.NativeOmukadeConnector.Patches
 {
     internal static class SplashScreenPatches
     {

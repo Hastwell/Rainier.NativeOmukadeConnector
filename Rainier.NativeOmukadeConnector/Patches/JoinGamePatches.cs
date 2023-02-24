@@ -6,7 +6,7 @@ using System.Collections.Generic;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Rainer.NativeOmukadeConnector.Patches
+namespace Rainier.NativeOmukadeConnector.Patches
 {
     [HarmonyPatch(typeof(Client), nameof(Client.JoinGameAsync), typeof(JoinGameRequest), typeof(ResponseHandler<JoinGameResponse>), typeof(ErrorHandler))]
     static class Client_JoinGameAsync_GIGO

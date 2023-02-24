@@ -5,7 +5,7 @@ using System.Text;
 using TMPro;
 using TPCI.Build;
 
-namespace Rainer.NativeOmukadeConnector.Patches
+namespace Rainier.NativeOmukadeConnector.Patches
 {
     [HarmonyPatch(typeof(StartupScreenText))]
     static class VersionStringPatches

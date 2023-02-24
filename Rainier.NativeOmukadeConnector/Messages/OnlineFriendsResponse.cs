@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Text;
 
-namespace Rainer.NativeOmukadeConnector.Messages
+namespace Rainier.NativeOmukadeConnector.Messages
 {
     public class OnlineFriendsResponse
     {

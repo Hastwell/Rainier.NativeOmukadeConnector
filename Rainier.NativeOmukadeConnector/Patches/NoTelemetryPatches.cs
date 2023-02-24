@@ -9,7 +9,7 @@ using TPCI.NetworkSystem;
 using TPCI.NewRelic;
 using TPCI.Telemetry;
 
-namespace Rainer.NativeOmukadeConnector.Patches
+namespace Rainier.NativeOmukadeConnector.Patches
 {
     [HarmonyPatch(typeof(Endpoint_ProdPipeline))]
     static class NoTelemetryPatches

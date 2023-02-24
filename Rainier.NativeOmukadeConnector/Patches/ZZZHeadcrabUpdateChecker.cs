@@ -4,7 +4,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Text;
 
-namespace Rainer.NativeOmukadeConnector.Patches
+namespace Rainier.NativeOmukadeConnector.Patches
 {
     [HarmonyPatch(typeof(GameSettingsEndpoint), "Initialize")]
     internal static class ZZZHeadcrabUpdateChecker

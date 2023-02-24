@@ -2,7 +2,7 @@
 
   <PropertyGroup>
     <TargetFramework>netstandard2.0</TargetFramework>
-    <AssemblyName>Rainer.NativeOmukadeConnector</AssemblyName>
+    <AssemblyName>Rainier.NativeOmukadeConnector</AssemblyName>
     <Description>Less primative redirector sending WebSocket calls to an Omukade instance</Description>
     <Version>1.0.0</Version>
     <AllowUnsafeBlocks>true</AllowUnsafeBlocks>

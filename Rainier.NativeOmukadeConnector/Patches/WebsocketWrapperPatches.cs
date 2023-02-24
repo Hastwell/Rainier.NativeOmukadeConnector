@@ -9,7 +9,7 @@ using Platform.Sdk.Models.Matchmaking;
 using Platform.Sdk.Models.Query;
 using Platform.Sdk.Models.User;
 using Platform.Sdk.Models.WebSocket;
-using Rainer.NativeOmukadeConnector.Messages;
+using Rainier.NativeOmukadeConnector.Messages;
 using RainierClientSDK;
 using RainierClientSDK.Inventory;
 using SharedLogicUtils.DataTypes;
@@ -27,7 +27,7 @@ using System.Threading.Tasks;
 using TPCI.Commands;
 using TPCI.Localization;
 
-namespace Rainer.NativeOmukadeConnector.Patches
+namespace Rainier.NativeOmukadeConnector.Patches
 {
     internal static class WswCommon
     {

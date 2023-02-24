@@ -9,11 +9,11 @@ using System.Threading.Tasks;
 using System.Threading;
 using Platform.Sdk.Models.Friend;
 using System.Collections.Concurrent;
-using Rainer.NativeOmukadeConnector.Messages;
+using Rainier.NativeOmukadeConnector.Messages;
 using System.Linq;
 using Newtonsoft.Json;
 
-namespace Rainer.NativeOmukadeConnector.Patches
+namespace Rainier.NativeOmukadeConnector.Patches
 {
     [HarmonyPatch(typeof(Client))]
     internal static class FriendStatusPatches

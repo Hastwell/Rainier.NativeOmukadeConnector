@@ -4,7 +4,7 @@ using Newtonsoft.Json;
 using Platform.Sdk;
 using Platform.Sdk.Stomp;
 using Platform.Sdk.Util;
-using Rainer.NativeOmukadeConnector.Messages;
+using Rainier.NativeOmukadeConnector.Messages;
 using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
@@ -14,7 +14,7 @@ using System.Reflection;
 using System.Text;
 using System.Threading;
 
-namespace Rainer.NativeOmukadeConnector.Patches
+namespace Rainier.NativeOmukadeConnector.Patches
 {
     [HarmonyPatch(typeof(Client))]
     internal static class ClientPatches
