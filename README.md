@@ -12,7 +12,7 @@ to connect to a server running an Omukade-family server (eg, Omukade Cheyenne) i
     * It might work for macOS, but I don't have a Mac.
     * It might work for Linux via Wine, but I don't test this.
 * BepInEx 5 (included with the installer release)
-* The address of an Omukade server you want to join (eg. `wss://exampleserver.omukade.net`)
+* The address of an Omukade server you want to join (eg. `wss://server.example.com:10851`)
 
 ## Usage
 Start the game using the TCGL Omukade shortcut (or using the command line `--enable-omukade`).
@@ -40,7 +40,8 @@ All other functions are unchanged, notably:
   You may need to change your active deck when switching to offical servers if you don't own the neccisary cards to use that deck.
 
 ## Information Disclosure
-If using a non-secure server (one starting with `ws://` instead of `wss://`), others can spy on your games with tools such as Wireshark. Use WSS wherever possible.
+If using a non-secure server (one starting with `ws://` instead of `wss://`), others may be able to spy on your games with packet capture tools such as Wireshark. Use WSS wherever possible.
+Note that Omukade Cheyenne doesn't currently support WSS.
 
 To facilitate gameplay, some account details are sent to your chosen Omukade server.
 * The current region you're connected to (eg, West US, East US, Europe, Japan). This is used to trick the game into not
