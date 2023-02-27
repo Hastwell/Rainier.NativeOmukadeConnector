@@ -24,7 +24,7 @@ namespace Rainier.NativeOmukadeConnector
 {
     internal class ConfigurationSettings
     {
-        public string OmukadeEndpoint = "ws://localhost:18181";
+        public string OmukadeEndpoint = "ws://localhost:10850";
         public bool ForceFriendsToBeOnline = false;
         public bool EnableAllCosmetics = false;
         public bool ForceAllLegalityChecksToSucceed = false;
