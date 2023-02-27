@@ -18,6 +18,18 @@ to connect to a server running an Omukade-family server (eg, Omukade Cheyenne) i
 Start the game using the TCGL Omukade shortcut (or using the command line `--enable-omukade`).
 Without either of these, the plugin will assume you want to connect to the offical game servers and disable itself without doing anything.
 
+### Configuration
+In the game install directory with the Pokemon TCG Live executable, locate or create the `config.json` file. An example minimum functioning config file:
+```json
+{"OmukadeEndpoint":"ws://omukade.example.com:10850"}
+```
+All currently supported configurations are:
+* OmukadeEndpoint - **REQUIRED**. Configures the Omukade server to use.
+* EnableAllCosmetics (true/false - default false) - _Avoid using._ Very crudely enables the use of all deck cosmetics. Unowned cosmetics may render oddly in selection menus. May or may not be a bannable offense if used on offical servers.
+* ForceAllLegalityChecksToSucceed (true/false - default false) - _Debug setting, avoid using._ Forces all decks to appear legal even if they contain out-of-format cards. The server can still reject your invalid deck (official servers do reject, so don't bother using this to cheat.)
+* ForceFriendsToBeOnline (true/false - default false) - _Debug setting, avoid using._ Forces all friends to appear online, even if they aren't.
+* DumpManifestFileUrl (true/false - default false) - _Debug setting, avoid using._ Dumps the URL containing the current game version's information manifest.
+
 ### Compatable Servers
 Rainier NOC is compatable with the following server implementations:
 * Omukade Cheyenne
