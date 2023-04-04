@@ -46,7 +46,7 @@ namespace Rainier.NativeOmukadeConnector
             SharedLogger.LogWarning($"CMD Line Args is: {string.Join(" ", Environment.GetCommandLineArgs())}");
             SharedLogger.LogWarning($"CMD Line is: {Environment.CommandLine}");
 
-            if (File.Exists("config.json"))
+            if (File.Exists("config-noc.json"))
             {
                 SharedLogger.LogMessage("Found config file");
                 Settings = JsonConvert.DeserializeObject<ConfigurationSettings>(File.ReadAllText("config.json"));

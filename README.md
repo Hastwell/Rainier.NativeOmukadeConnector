@@ -19,7 +19,7 @@ Start the game using the TCGL Omukade shortcut (or using the command line `--ena
 Without either of these, the plugin will assume you want to connect to the offical game servers and disable itself without doing anything.
 
 ### Configuration
-In the game install directory with the Pokemon TCG Live executable, locate or create the `config.json` file. An example minimum functioning config file:
+In the game install directory with the Pokemon TCG Live executable, locate or create the `config-noc.json` file. An example minimum functioning config file:
 ```json
 {"OmukadeEndpoint":"ws://omukade.example.com:10850"}
 ```
@@ -73,7 +73,7 @@ game updates can and have introduced incompatibilities with the patches this too
 
 ## Compiling
 * Use Visual Studio 2022 or later, build the project.
-* With the .NET 6 SDK, `dotnet build Omukade.ProcedualAssemblyRewriter.sln`
+* With the .NET 6 SDK, `dotnet build Omukade.NativeOmukadeConnector.sln`
 
 ## License
 This software is licensed under the terms of the [GNU AGPL v3.0](https://www.gnu.org/licenses/agpl-3.0.en.html)
