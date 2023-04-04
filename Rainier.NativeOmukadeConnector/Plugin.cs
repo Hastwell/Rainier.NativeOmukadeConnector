@@ -28,8 +28,9 @@ namespace Rainier.NativeOmukadeConnector
     [BepInPlugin(PluginInfo.PLUGIN_GUID, PluginInfo.PLUGIN_NAME, PluginInfo.PLUGIN_VERSION)]
     public class Plugin : BaseUnityPlugin
     {
-        internal const string VERSION_STRING = "Rainier Redirector 2.0.0 \"NOC\"";
+        internal const string VERSION_STRING = "Native Omukade Connector \"NOC\" 2.0.0";
         internal const string OMUKADE_VERSION = "Omukade Cheyenne-EX";
+        internal const string CONFIG_FILENAME = "config-noc.json";
 
         internal static ManualLogSource SharedLogger;
         internal static ConfigurationSettings Settings;
@@ -46,10 +47,10 @@ namespace Rainier.NativeOmukadeConnector
             SharedLogger.LogWarning($"CMD Line Args is: {string.Join(" ", Environment.GetCommandLineArgs())}");
             SharedLogger.LogWarning($"CMD Line is: {Environment.CommandLine}");
 
-            if (File.Exists("config-noc.json"))
+            if (File.Exists(CONFIG_FILENAME))
             {
                 SharedLogger.LogMessage("Found config file");
-                Settings = JsonConvert.DeserializeObject<ConfigurationSettings>(File.ReadAllText("config.json"));
+                Settings = JsonConvert.DeserializeObject<ConfigurationSettings>(File.ReadAllText(CONFIG_FILENAME));
             }
             else
             {
@@ -61,9 +62,9 @@ namespace Rainier.NativeOmukadeConnector
 
 
             // Plugin startup logic
-            SharedLogger.LogInfo($"Loading Rainier PWR...");
+            SharedLogger.LogInfo($"Performing patches for NOC...");
 
-            new HarmonyLib.Harmony("RainierPrimativeWebsocketRedirector").PatchAll();
+            new HarmonyLib.Harmony(nameof(Rainier.NativeOmukadeConnector)).PatchAll();
 
             SharedLogger.LogInfo($"Applied Patches");
         }
