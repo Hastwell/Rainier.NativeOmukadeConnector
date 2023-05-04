@@ -47,25 +47,19 @@ using TPCI.Localization;
 
 namespace Rainier.NativeOmukadeConnector.Patches
 {
+    /// <summary>
+    /// Holds common fields used for WebsocketWrapper patches, helpers for interacting with WSW objects, and reflection information for WSW fields/methods.
+    /// </summary>
     internal static class WswCommon
     {
-
         internal static Assembly platformSdkAssembly = typeof(WebSocketSettings).Assembly;
         internal static Type wswType = platformSdkAssembly.GetType("Platform.Sdk.WebsocketWrapper");
 
         internal static MethodInfo _SendCommandGeneric = wswType.GetMethod("SendCommand", BindingFlags.Instance | BindingFlags.Public);
 
-        internal static MethodInfo _SetNetworkChangeStatus = wswType.GetMethod("SetNetworkChangeStatus", BindingFlags.Instance | BindingFlags.NonPublic);
-
         internal static ICodec JsonCodec = (ICodec) platformSdkAssembly.GetType("Platform.Sdk.Codecs.CodecUtil").GetMethod("Codec", BindingFlags.Static | BindingFlags.Public).Invoke(null, new object[] { SerializationFormat.JSON });
 
-        /*
-        public static void SetNetworkChangeStatus(object parentWswInstance, NetworkStatus newStatus) => _SetNetworkChangeStatus.Invoke(parentWswInstance, new object[] { newStatus });
-        public static void SetNetworkChangeStatus(NetworkStatus newStatus) => SetNetworkChangeStatus(wswInstance, newStatus);
-        */
-
         internal static object? wswInstance = null;
-        //internal static Lazy<string> cachedAccountId = new Lazy<string>(() => ResolveClient().AccountId, isThreadSafe: true);
 
         internal static Client ResolveClient()
         {
@@ -100,6 +94,9 @@ namespace Rainier.NativeOmukadeConnector.Patches
             => Traverse.Create(client).Field("_ws").Field("_connected").SetValue(true);
     }
 
+    /// <summary>
+    /// Rewrites the websocket endpoint to point to the Omukade server.
+    /// </summary>
     [HarmonyPatch]
     public static class HttpRouter_WebsocketEndpoint
     {
@@ -117,27 +114,24 @@ namespace Rainier.NativeOmukadeConnector.Patches
         }
     }
 
+    /// <summary>
+    /// Forces an SDM with deck information to be sent for all matchmaking-related messages, and swallows session messages that aren't used in Omukade.
+    /// </summary>
     [HarmonyPatch]
     static class Wsw_SendCommand
     {
         static IEnumerable<MethodBase> TargetMethods()
         {
-            Type[] allKnownCommands = new Type[] {
+            Type[] allHandledCommands = new Type[] {
                 typeof(BeginMatchmaking),
-                typeof(CancelMatchmaking),
-                //typeof(GameMessage),
-                //typeof(CancelDirectMatch),
                 typeof(ProposeDirectMatch),
                 typeof(AcceptDirectMatch),
 
                 typeof(Platform.Sdk.Models.Account.SessionUpdatePayload),
                 typeof(SessionStart),
-                typeof(SupplementalDataMessageV2),
-                //typeof(PingPayload),
-                //typeof(HeartbeatPayload),
             };
 
-            return allKnownCommands.Select(typeUsed => WswCommon.wswType.GetMethod("SendCommand", BindingFlags.Instance | BindingFlags.Public).MakeGenericMethod(typeUsed));
+            return allHandledCommands.Select(typeUsed => WswCommon.wswType.GetMethod("SendCommand", BindingFlags.Instance | BindingFlags.Public).MakeGenericMethod(typeUsed));
         }
 
         [HarmonyPrefix]
@@ -147,13 +141,6 @@ namespace Rainier.NativeOmukadeConnector.Patches
             {
                 Plugin.SharedLogger.LogInfo($"Intentionally swallowing sensitive message {body.GetType().Name} that shouldn't be sent to Omukade.");
                 return false;
-            }
-
-            // Don't process our own SDM; just pass it along to Omukade
-            if (body is SupplementalDataMessageV2)
-            {
-                //Plugin.SharedLogger.LogWarning($"Skipping processing of our own SupplementalDataMessage; the TargetMethods filter shouldn't be catching this message type.");
-                return true;
             }
 
             string deckId = null;
@@ -188,6 +175,9 @@ namespace Rainier.NativeOmukadeConnector.Patches
         }
     }
 
+    /// <summary>
+    /// Forces an SDM to be sent immediately after opening a Websocket connection with the player's ID and display name
+    /// </summary>
     [HarmonyPatch]
     static class Wsw_CreateWebsocket
     {
@@ -240,24 +230,4 @@ namespace Rainier.NativeOmukadeConnector.Patches
             }
         }
     }
-    /*[HarmonyPatch]
-    public static class Wsw_SendCommand_Swallow
-    {
-        static IEnumerable<MethodBase> TargetMethods()
-        {
-            Type[] allKnownCommands = new Type[] {
-                typeof(Platform.Sdk.Models.Account.SessionUpdatePayload),
-                typeof(SessionStart),
-                typeof(PingPayload),
-                typeof(HeartbeatPayload),
-            };
-
-            return allKnownCommands.Select(typeUsed => WswCommon.wswType.GetMethod("SendCommand", BindingFlags.Instance | BindingFlags.Public).MakeGenericMethod(typeUsed));
-        }
-
-        static IEnumerable<CodeInstruction> Transpiler()
-        {
-            yield return new CodeInstruction(OpCodes.Ret);
-        }
-    }*/
 }
