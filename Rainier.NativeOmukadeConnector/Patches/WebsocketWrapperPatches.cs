@@ -19,6 +19,7 @@
 using _Rainier.Scripts.Managers.StartUp;
 using HarmonyLib;
 using Newtonsoft.Json;
+using Omukade.Cheyenne.CustomMessages;
 using Platform.Sdk;
 using Platform.Sdk.Codecs;
 using Platform.Sdk.Models;
@@ -221,6 +222,11 @@ namespace Rainier.NativeOmukadeConnector.Patches
                 {
                     WswCommon.ForceIsConnectedOnWsw(parentClient);
                     WswCommon.InjectUpsockMessage(client: parentClient, new SupplementalDataMessageV2 { PlayerDisplayName = screenName, PlayerId = parentClient.AccountId });
+
+                    if(Plugin.Settings.AskServerForImplementedCards)
+                    {
+                        WswCommon.InjectUpsockMessage(client: parentClient, new GetImplementedExpandedCardsV1());
+                    }
                 }
                 catch(Exception e)
                 {

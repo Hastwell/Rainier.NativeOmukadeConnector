@@ -19,6 +19,7 @@
 // #define DEBUG_LOG_RX_MESSAGES
 using HarmonyLib;
 using Newtonsoft.Json;
+using Omukade.Cheyenne.CustomMessages;
 using Platform.Sdk;
 using Platform.Sdk.Stomp;
 using Platform.Sdk.Util;
@@ -42,6 +43,14 @@ namespace Rainier.NativeOmukadeConnector.Patches
             .GetMethod("ForwardMessage", BindingFlags.Instance | BindingFlags.NonPublic)
             .MakeGenericMethod(typeof(OnlineFriendsResponse));
 
+        internal static event Action<ImplementedExpandedCardsV1>? ReceivedImplementedExpandedCardsV1;
+        internal static MethodInfo forwardMessageForExpandedCardsV1 = typeof(Client)
+            .GetMethod("ForwardMessage", BindingFlags.Instance | BindingFlags.NonPublic)
+            .MakeGenericMethod(typeof(ImplementedExpandedCardsV1));
+
+        internal static HashSet<string>? ImplementedExpandedCardsFromServer = null;
+        internal static string? ImplementedExpandedCardsFromServerChecksum = null;
+
         [HarmonyPostfix]
         [HarmonyPatch(MethodType.Constructor)]
         [HarmonyPatch(new Type[] { typeof(ClientBuilder), typeof(string) })]
@@ -64,6 +73,24 @@ namespace Rainier.NativeOmukadeConnector.Patches
                     forwardMessageForOFR.Invoke(__instance, new object[] { contentType, buffer, new MessageHandler<OnlineFriendsResponse>((c, e) => ReceivedOnlineFriendsResponse?.Invoke(e)) });
                 }
                 catch(Exception e)
+                {
+                    BetterExceptionLogger.LogException(e);
+                    throw;
+                }
+            });
+
+            __result.Add(nameof(ImplementedExpandedCardsV1), (contentType, buffer) =>
+            {
+                try
+                {
+                    forwardMessageForExpandedCardsV1.Invoke(__instance, new object[] { contentType, buffer, new MessageHandler<ImplementedExpandedCardsV1>((c, e) =>
+                    {
+                        ImplementedExpandedCardsFromServer = new HashSet<string>(e.ImplementedCardNames);
+                        ImplementedExpandedCardsFromServerChecksum = e.Checksum;
+                        ReceivedImplementedExpandedCardsV1?.Invoke(e);
+                    }) });
+                }
+                catch (Exception e)
                 {
                     BetterExceptionLogger.LogException(e);
                     throw;

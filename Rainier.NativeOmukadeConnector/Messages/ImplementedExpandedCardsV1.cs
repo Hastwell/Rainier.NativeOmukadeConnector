@@ -16,31 +16,31 @@
 * along with this program.  If not, see <http://www.gnu.org/licenses/>.
 **************************************************************************/
 
-using HarmonyLib;
-using Omukade.Cheyenne.CustomMessages;
-using Platform.Sdk;
-using Platform.Sdk.Codecs;
-using Rainier.NativeOmukadeConnector.Messages;
-using System;
+using Newtonsoft.Json;
 using System.Collections.Generic;
-using System.Text;
+using System.Linq;
 
-namespace Rainier.NativeOmukadeConnector.Patches
+namespace Omukade.Cheyenne.CustomMessages
 {
-    [HarmonyPatch(typeof(Command<GetOnlineFriends>))]
-    [HarmonyPatch(typeof(Command<SupplementalDataMessageV2>))]
-    internal static class CommandPatches
+    public class ImplementedExpandedCardsV1
     {
-#warning TODO; add a custom payload for SDMs and GOFs to leverage Rainier's native encoding; this hacky patch runs on every message sent
-        [HarmonyPatch(nameof(Command<SupplementalDataMessageV2>.Encode))]
-        [HarmonyPrefix]
-        static void ForceJsonForOmukadePayloads(ref ICodec serializer, object body)
+        /// <summary>
+        /// A list of of valid card IDs, seperated by pipe symbols ("|"). If this value's checksum matched the one provided in <see cref="GetImplementedExpandedCardsV1.Checksum"/>, this value will be null.
+        /// </summary>
+        public string? RawImplementedCardNames;
+
+        [JsonIgnore]
+        public IEnumerable<string>? ImplementedCardNames
         {
-            if(body is SupplementalDataMessageV2 || body is GetOnlineFriends || body is GetImplementedExpandedCardsV1)
+            get
             {
-                Plugin.SharedLogger.LogInfo($"Forcing {body.GetType().Name} to be processed as JSON");
-                serializer = WswCommon.JsonCodec;
+                return RawImplementedCardNames?.Split('|');
             }
         }
+
+        /// <summary>
+        /// Checksum of valid card IDs. Always returned.
+        /// </summary>
+        public string Checksum;
     }
 }

@@ -34,6 +34,18 @@ namespace Rainier.NativeOmukadeConnector.Patches
         {
             Plugin.SharedLogger.LogError(PrepareExceptionString(exception));
 
+            if(exception is AggregateException ae)
+            {
+                foreach(Exception ie in ae.InnerExceptions)
+                {
+                    Plugin.SharedLogger.LogError(PrepareExceptionString(ie));
+                }
+            }
+            else if(exception.InnerException != null)
+            {
+                Plugin.SharedLogger.LogError(PrepareExceptionString(exception.InnerException));
+            }
+
             return false;
         }
 

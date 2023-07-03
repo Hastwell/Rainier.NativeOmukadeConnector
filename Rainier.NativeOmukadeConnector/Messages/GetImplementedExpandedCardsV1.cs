@@ -16,20 +16,13 @@
 * along with this program.  If not, see <http://www.gnu.org/licenses/>.
 **************************************************************************/
 
-using System;
-using System.Collections.Generic;
-using System.Text;
-
-namespace Rainier.NativeOmukadeConnector
+namespace Omukade.Cheyenne.CustomMessages
 {
-    internal class ConfigurationSettings
+    public class GetImplementedExpandedCardsV1
     {
-        public string OmukadeEndpoint = "ws://localhost:10850";
-        public bool ForceFriendsToBeOnline = false;
-        public bool EnableAllCosmetics = false;
-        public bool ForceAllLegalityChecksToSucceed = false;
-        public bool DumpManifestFileUrl = false;
-        public bool AskServerForImplementedCards = false;
-        public bool ShowManagerLoadingStatus = false;
+        /// <summary>
+        /// The checksum of the client's existing data. If this matches the server's checksum, fresh data will not be returned. If not provided, or the provided checksum does not match the server's data, fresh data will be returned.
+        /// </summary>
+        public string? Checksum;
     }
 }
