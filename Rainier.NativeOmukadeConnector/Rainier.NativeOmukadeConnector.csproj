@@ -14,7 +14,6 @@
     <Compile Remove="Patches\GameManagerLoadingTextPatches.cs" />
     <Compile Remove="Patches\PlatformCollectionService_ReferenceGetter.cs" />
     <Compile Remove="Patches\ProfileServicePatches.cs" />
-    <Compile Remove="Patches\TokenHolderPatches.cs" />
   </ItemGroup>
 
   <ItemGroup>

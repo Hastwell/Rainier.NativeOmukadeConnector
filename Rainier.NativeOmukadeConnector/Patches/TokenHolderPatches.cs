@@ -6,22 +6,20 @@ using System.Reflection;
 using System.Reflection.Emit;
 using System.Text;
 
-namespace Rainer.NativeOmukadeConnector.Patches
+namespace Rainier.NativeOmukadeConnector.Patches
 {
     [HarmonyPatch]
-    internal static class TokenHolderPatches
+    internal static class TokenHolder_DontSendWebsocketAuth
     {
         static IEnumerable<MethodBase> TargetMethods()
         {
-            return Enumerable.Repeat(WswCommon.platformSdkAssembly.GetType("Platform.Sdk.TokenHolder").GetMethod("CheckIfSessionChanged", BindingFlags.Instance | BindingFlags.Public), 1);
+            return Enumerable.Repeat(WswCommon.platformSdkAssembly.GetType("Platform.Sdk.TokenHolder").GetMethod("AddWebsocketUpgradeHeaders", BindingFlags.Instance | BindingFlags.Public), 1);
         }
 
-        // Since we're abusing SessionStart as a cue to send an initial SDM message, we need to make sure it always fires.
         [HarmonyTranspiler]
         [HarmonyPatch]
-        static IEnumerable<CodeInstruction> SessionAlwaysChanged()
+        static IEnumerable<CodeInstruction> DontAddWebsocketAuthHeaders()
         {
-            yield return new CodeInstruction(OpCodes.Ldc_I4_1);
             yield return new CodeInstruction(OpCodes.Ret);
         }
     }
