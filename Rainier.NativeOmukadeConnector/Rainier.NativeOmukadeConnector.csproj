@@ -30,79 +30,79 @@
 
 	<ItemGroup>
 		<Reference Include="Assembly-CSharp">
-			<HintPath>..\..\Rainier-Assemblies\1.6.1.189999.20230620_1957\Assembly-CSharp.dll</HintPath>
+			<HintPath>..\..\Rainier-Assemblies\1.7.1.206332.20230817_2354\Assembly-CSharp.dll</HintPath>
 			<Private>False</Private>
 		</Reference>
 		<Reference Include="Assembly-CSharp-firstpass">
-			<HintPath>..\..\Rainier-Assemblies\1.6.1.189999.20230620_1957\Assembly-CSharp-firstpass.dll</HintPath>
+			<HintPath>..\..\Rainier-Assemblies\1.7.1.206332.20230817_2354\Assembly-CSharp-firstpass.dll</HintPath>
 			<Private>False</Private>
 		</Reference>
 		<Reference Include="CardDatabase.DataAccess">
-			<HintPath>..\..\Rainier-Assemblies\1.6.1.189999.20230620_1957\CardDatabase.DataAccess.dll</HintPath>
+			<HintPath>..\..\Rainier-Assemblies\1.7.1.206332.20230817_2354\CardDatabase.DataAccess.dll</HintPath>
 			<Private>False</Private>
 		</Reference>
 		<Reference Include="MatchLogic">
-			<HintPath>..\..\Rainier-Assemblies\1.6.1.189999.20230620_1957\MatchLogic.dll</HintPath>
+			<HintPath>..\..\Rainier-Assemblies\1.7.1.206332.20230817_2354\MatchLogic.dll</HintPath>
 			<Private>False</Private>
 		</Reference>
 		<Reference Include="NewRelicPostAPI">
-			<HintPath>..\..\Rainier-Assemblies\1.6.1.189999.20230620_1957\NewRelicPostAPI.dll</HintPath>
+			<HintPath>..\..\Rainier-Assemblies\1.7.1.206332.20230817_2354\NewRelicPostAPI.dll</HintPath>
 			<Private>False</Private>
 		</Reference>
 		<Reference Include="Platform.Sdk">
-			<HintPath>..\..\Rainier-Assemblies\1.6.1.189999.20230620_1957\Platform.Sdk.dll</HintPath>
+			<HintPath>..\..\Rainier-Assemblies\1.7.1.206332.20230817_2354\Platform.Sdk.dll</HintPath>
 			<Private>False</Private>
 		</Reference>
 		<Reference Include="RainierClientSDK">
-			<HintPath>..\..\Rainier-Assemblies\1.6.1.189999.20230620_1957\RainierClientSDK.dll</HintPath>
+			<HintPath>..\..\Rainier-Assemblies\1.7.1.206332.20230817_2354\RainierClientSDK.dll</HintPath>
 			<Private>False</Private>
 		</Reference>
 		<Reference Include="SharedLogicUtils">
-			<HintPath>..\..\Rainier-Assemblies\1.6.1.189999.20230620_1957\SharedLogicUtils.dll</HintPath>
+			<HintPath>..\..\Rainier-Assemblies\1.7.1.206332.20230817_2354\SharedLogicUtils.dll</HintPath>
 			<Private>False</Private>
 		</Reference>
 		<Reference Include="TelemetryCore">
-			<HintPath>..\..\Rainier-Assemblies\1.6.1.189999.20230620_1957\TelemetryCore.dll</HintPath>
+			<HintPath>..\..\Rainier-Assemblies\1.7.1.206332.20230817_2354\TelemetryCore.dll</HintPath>
 			<Private>False</Private>
 		</Reference>
 		<Reference Include="TPCI.PTCS">
-		  <HintPath>..\..\Rainier-Assemblies\1.6.1.189999.20230620_1957\TPCI.PTCS.dll</HintPath>
+		  <HintPath>..\..\Rainier-Assemblies\1.7.1.206332.20230817_2354\TPCI.PTCS.dll</HintPath>
 		  <Private>False</Private>
 		</Reference>
 		<Reference Include="TPCIBuildtoolsRuntime">
-			<HintPath>..\..\Rainier-Assemblies\1.6.1.189999.20230620_1957\TPCIBuildtoolsRuntime.dll</HintPath>
+			<HintPath>..\..\Rainier-Assemblies\1.7.1.206332.20230817_2354\TPCIBuildtoolsRuntime.dll</HintPath>
 			<Private>False</Private>
 		</Reference>
 		<Reference Include="Unity.TextMeshPro">
-			<HintPath>..\..\Rainier-Assemblies\1.6.1.189999.20230620_1957\Unity.TextMeshPro.dll</HintPath>
+			<HintPath>..\..\Rainier-Assemblies\1.7.1.206332.20230817_2354\Unity.TextMeshPro.dll</HintPath>
 			<Private>False</Private>
 		</Reference>
 		<Reference Include="UnityEngine.UI">
-			<HintPath>..\..\Rainier-Assemblies\1.6.1.189999.20230620_1957\UnityEngine.UI.dll</HintPath>
+			<HintPath>..\..\Rainier-Assemblies\1.7.1.206332.20230817_2354\UnityEngine.UI.dll</HintPath>
 			<Private>False</Private>
 		</Reference>
 		<Reference Include="RainierCompendium">
-			<HintPath>..\..\Rainier-Assemblies\1.6.1.189999.20230620_1957\RainierCompendium.dll</HintPath>
+			<HintPath>..\..\Rainier-Assemblies\1.7.1.206332.20230817_2354\RainierCompendium.dll</HintPath>
 			<Private>False</Private>
 		</Reference>
 		<Reference Include="NewRelicPostInterfaces">
-			<HintPath>..\..\Rainier-Assemblies\1.6.1.189999.20230620_1957\NewRelicPostInterfaces.dll</HintPath>
+			<HintPath>..\..\Rainier-Assemblies\1.7.1.206332.20230817_2354\NewRelicPostInterfaces.dll</HintPath>
 			<Private>False</Private>
 		</Reference>
 		<Reference Include="TPCICommand">
-			<HintPath>..\..\Rainier-Assemblies\1.6.1.189999.20230620_1957\TPCICommand.dll</HintPath>
+			<HintPath>..\..\Rainier-Assemblies\1.7.1.206332.20230817_2354\TPCICommand.dll</HintPath>
 			<Private>False</Private>
 		</Reference>
 		<Reference Include="TPCINetworkSystem">
-			<HintPath>..\..\Rainier-Assemblies\1.6.1.189999.20230620_1957\TPCINetworkSystem.dll</HintPath>
+			<HintPath>..\..\Rainier-Assemblies\1.7.1.206332.20230817_2354\TPCINetworkSystem.dll</HintPath>
 			<Private>False</Private>
 		</Reference>
 		<Reference Include="TPCIAssetBundleSystem">
-			<HintPath>..\..\Rainier-Assemblies\1.6.1.189999.20230620_1957\TPCIAssetBundleSystem.dll</HintPath>
+			<HintPath>..\..\Rainier-Assemblies\1.7.1.206332.20230817_2354\TPCIAssetBundleSystem.dll</HintPath>
 			<Private>False</Private>
 		</Reference>
 		<Reference Include="TPCILocalization">
-			<HintPath>..\..\Rainier-Assemblies\1.6.1.189999.20230620_1957\TPCILocalization.dll</HintPath>
+			<HintPath>..\..\Rainier-Assemblies\1.7.1.206332.20230817_2354\TPCILocalization.dll</HintPath>
 			<Private>False</Private>
 		</Reference>
 	</ItemGroup>

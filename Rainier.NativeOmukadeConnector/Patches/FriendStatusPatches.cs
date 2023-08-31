@@ -75,7 +75,7 @@ namespace Rainier.NativeOmukadeConnector.Patches
             // Plugin.SharedLogger.LogInfo($"Preparing to get friend data (TXID {txId})...");
             Action<OnlineFriendsResponse> respondToGetFriends = (OnlineFriendsResponse ofrReceived) =>
             {
-                Plugin.SharedLogger.LogInfo($"{nameof(GetOnlineFriendsFromOmukade)} - For TxID {txId}, receiving OFR {JsonConvert.SerializeObject(ofrReceived)}");
+                // Plugin.SharedLogger.LogInfo($"{nameof(GetOnlineFriendsFromOmukade)} - For TxID {txId}, receiving OFR {JsonConvert.SerializeObject(ofrReceived)}");
                 if (ofrReceived.TransactionId == txId)
                 {
                     ofr = ofrReceived;
@@ -90,11 +90,11 @@ namespace Rainier.NativeOmukadeConnector.Patches
 
             if(didGetSignalInTime)
             {
-                Plugin.SharedLogger.LogInfo($"GetFriends event was received; returning control");
+                // Plugin.SharedLogger.LogInfo($"GetFriends event was received; returning control");
             }
             else
             {
-                Plugin.SharedLogger.LogError($"GetFriends event timed out; returning control");
+                Plugin.SharedLogger.LogError(nameof(GetOnlineFriendsFromOmukade) + ": GetFriends event timed out; returning control");
             }
 
             ClientPatches.ReceivedOnlineFriendsResponse -= respondToGetFriends;
