@@ -12,7 +12,7 @@ to connect to a server running an Omukade-family server (eg, Omukade Cheyenne) i
     * It might work for macOS, but I don't have a Mac.
     * It might work for Linux via Wine, but I don't test this.
 * BepInEx 5 (included with the installer release)
-* The address of an Omukade server you want to join (eg. `wss://server.example.com:10851`)
+* The address of an Omukade server you want to join (eg. `ws://cheyenne-beta.omukade.net:10850`)
 
 ## Usage
 Start the game using the TCGL Omukade shortcut (or using the command line `--enable-omukade`).
@@ -21,10 +21,10 @@ Without either of these, the plugin will assume you want to connect to the offic
 ### Configuration
 In the game install directory with the Pokemon TCG Live executable, locate or create the `config-noc.json` file. An example minimum functioning config file:
 ```json
-{"OmukadeEndpoint":"ws://omukade.example.com:10850"}
+{"OmukadeEndpoint":"ws://cheyenne-beta.omukade.net:10850"}
 ```
 All currently supported configurations are:
-* OmukadeEndpoint - **REQUIRED**. Configures the Omukade server to use.
+* OmukadeEndpoint - **RECOMMENDED**. Configures the Omukade server to use. Default: `ws://cheyenne-beta.omukade.net:10850`
 * EnableAllCosmetics (true/false - default false) - _Avoid using._ Very crudely enables the use of all deck cosmetics. Unowned cosmetics may render oddly in selection menus. May or may not be a bannable offense if used on offical servers.
 * ForceAllLegalityChecksToSucceed (true/false - default false) - _Debug setting, avoid using._ Forces all decks to appear legal even if they contain out-of-format cards. The server can still reject your invalid deck (official servers do reject, so don't bother using this to cheat.)
 * ForceFriendsToBeOnline (true/false - default false) - _Debug setting, avoid using._ Forces all friends to appear online, even if they aren't.
@@ -70,6 +70,8 @@ Some details are specifically **not** sent:
 ## Game Updates
 Game updates do not appear to affect Rainier NOC, other BepInEx plugins, or BepInEx itself. However,
 game updates can and have introduced incompatibilities with the patches this tool makes.
+
+Some major updates may uninstall the game entirely (including BepInEx + Rainier NOC); if Rainier NOC does not start or activate after a major update, try reinstalling Rainier NOC.
 
 ## Compiling
 * Use Visual Studio 2022 or later, build the project.
