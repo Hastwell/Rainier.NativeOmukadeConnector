@@ -35,6 +35,19 @@ using System.Threading;
 
 namespace Rainier.NativeOmukadeConnector.Patches
 {
+    [HarmonyPatch(typeof(ClientBuilder))]
+    internal static class ClientBuilderPatches
+    {
+        [HarmonyPrefix]
+        [HarmonyPatch(nameof(ClientBuilder.Build), new Type[] { typeof(string) })]
+        static void Build(ClientBuilder __instance)
+        {
+            __instance.SetWebsocketReceiptsEnabled(false);
+#warning TODO: Implement receipts in Omukade
+            Plugin.SharedLogger.LogInfo(nameof(ClientBuilderPatches) + ": Enable Message Receipts patched to: false");
+        }
+    }
+
     [HarmonyPatch(typeof(Client))]
     internal static class ClientPatches
     {
@@ -50,16 +63,6 @@ namespace Rainier.NativeOmukadeConnector.Patches
 
         internal static HashSet<string>? ImplementedExpandedCardsFromServer = null;
         internal static string? ImplementedExpandedCardsFromServerChecksum = null;
-
-        [HarmonyPostfix]
-        [HarmonyPatch(MethodType.Constructor)]
-        [HarmonyPatch(new Type[] { typeof(ClientBuilder), typeof(string) })]
-        static void AdjustClientSettings(ref bool ____enableMessageReceipts)
-        {
-            Plugin.SharedLogger.LogInfo(nameof(ClientPatches) + ": Enable Message Receipts patched to: false");
-#warning TODO: Implement receipts in Omukade
-            ____enableMessageReceipts = false;
-        }
 
         [HarmonyPostfix]
         [HarmonyPatch("CreateMessageHandlerMapping")]
@@ -118,7 +121,7 @@ namespace Rainier.NativeOmukadeConnector.Patches
             string isJsonString = frame.ContentType == "application/json" ? "JSON" : "BINARY";
 #pragma warning restore Harmony003 // Harmony non-ref patch parameters modified
 
-            Plugin.SharedLogger.LogInfo($"RX {isJsonString} {frame.Payload} (len={buffer.Length}, cslen={buffer.ContentSegment.Count})");
+            Plugin.SharedLogger.LogDebug($"RX {isJsonString} {frame.Payload} (len={buffer.Length}, cslen={buffer.ContentSegment.Count})");
         }
 #endif
     }

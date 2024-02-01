@@ -61,13 +61,15 @@ namespace Rainier.NativeOmukadeConnector.Patches
             return false;
         }
 
-        static async Task GetSingleFriendStatusFromOmukadeAsync(Client instance, string friendPtcsGuid, ResponseHandler<GetFriendOnlineStatusResponse> success, ErrorHandler failure)
+#pragma warning disable CS1998 // Async method lacks 'await' operators and will run synchronously
+        static async Task GetSingleFriendStatusFromOmukadeAsync(IClient instance, string friendPtcsGuid, ResponseHandler<GetFriendOnlineStatusResponse> success, ErrorHandler failure)
         {
             List<string> friendFound = GetOnlineFriendsFromOmukade(instance, new List<string> { friendPtcsGuid });
             success?.Invoke(instance, new GetFriendOnlineStatusResponse(isOnline: friendFound.Contains(friendPtcsGuid), friendPtcsGuid));
         }
+#pragma warning restore CS1998 // Async method lacks 'await' operators and will run synchronously
 
-        internal static List<string> GetOnlineFriendsFromOmukade(Client instance, List<string> concernedFriends)
+        internal static List<string> GetOnlineFriendsFromOmukade(IClient instance, List<string> concernedFriends)
         {
             using ManualResetEvent getFriendsEvent = new ManualResetEvent(initialState: false);
             OnlineFriendsResponse? ofr = null;
@@ -105,7 +107,7 @@ namespace Rainier.NativeOmukadeConnector.Patches
     }
 
     [HarmonyPatch]
-    internal static class FriendServicePatches
+    internal static class GetFriendsPatch
     {
         // RainierClientSDK.source.Friend.Implementations.PlatformFriendService.<>c__DisplayClass26_0
         // This patches one of the async method fragments for PlatformFriendService.GetFriendsAsync.
@@ -114,12 +116,12 @@ namespace Rainier.NativeOmukadeConnector.Patches
             .GetNestedTypes(BindingFlags.Instance | BindingFlags.NonPublic)
             .SelectMany(t => t.GetMethods(BindingFlags.Instance | BindingFlags.NonPublic))
             .Where(m => m.Name.StartsWith($"<{nameof(PlatformFriendService.GetFriendsAsync)}>"))
-            .Where(m => { ParameterInfo[] mParams = m.GetParameters(); return mParams.Length == 2 && mParams[0].ParameterType == typeof(Client) && mParams[1].ParameterType == typeof(GetAllFriendsResponse); })
+            .Where(m => { ParameterInfo[] mParams = m.GetParameters(); return mParams.Length == 2 && mParams[0].ParameterType == typeof(IClient) && mParams[1].ParameterType == typeof(GetAllFriendsResponse); })
             .Take(1);
 
-        static void Prefix(Client sdk, GetAllFriendsResponse message)
+        static void Prefix(IClient sdk, GetAllFriendsResponse message)
         {
-            // Plugin.SharedLogger.LogInfo($"{nameof(PlatformFriendService.GetFriendsAsync)} - Checking Omukade for all online friends");
+            Plugin.SharedLogger.LogInfo($"{nameof(PlatformFriendService.GetFriendsAsync)} - Checking Omukade for all online friends");
             if (Plugin.Settings.ForceFriendsToBeOnline)
             {
                 foreach (FriendInfo friend in message.friendInfos)
@@ -130,7 +132,16 @@ namespace Rainier.NativeOmukadeConnector.Patches
             else
             {
                 List<string> friendIds = message.friendInfos.Select(f => f.signedAccountId.accountId).ToList();
-                List<string> onlineFriendsFound = FriendStatusPatches.GetOnlineFriendsFromOmukade(sdk, friendIds);
+                List<string> onlineFriendsFound;
+                try
+                {
+                    onlineFriendsFound = FriendStatusPatches.GetOnlineFriendsFromOmukade(sdk, friendIds);
+                }
+                catch(Exception e)
+                {
+                    BetterExceptionLogger.LogException(e);
+                    throw;
+                }
                 HashSet<string> actuallyOnlineFriends = new HashSet<string>(onlineFriendsFound);
 
                 foreach (FriendInfo friend in message.friendInfos)

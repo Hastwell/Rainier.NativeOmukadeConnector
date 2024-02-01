@@ -109,7 +109,7 @@ namespace Rainier.NativeOmukadeConnector.Patches
         static bool Prefix(Platform.Sdk.Route ____route, ref Uri __result)
         {
             string endpointToUse = Plugin.Settings.OmukadeEndpoint + "/websocket/v1/external/stomp";
-            Plugin.SharedLogger.LogInfo($"Rewriting Websocket route from \"{____route.WebsocketUrl}\" to \"{endpointToUse}\"");
+            Plugin.SharedLogger.LogDebug($"Rewriting Websocket route from \"{____route.WebsocketUrl}\" to \"{endpointToUse}\"");
             __result = new Uri(endpointToUse);
             return false;
         }
@@ -136,11 +136,12 @@ namespace Rainier.NativeOmukadeConnector.Patches
         }
 
         [HarmonyPrefix]
+        [HarmonyPatch]
         public static bool InjectSdmMessagesToMatchmakingMessages(object __instance, ref object command, ref object body)
         {
             if (body is Platform.Sdk.Models.Account.SessionUpdatePayload || body is SessionStart)
             {
-                Plugin.SharedLogger.LogInfo($"Intentionally swallowing sensitive message {body.GetType().Name} that shouldn't be sent to Omukade.");
+                Plugin.SharedLogger.LogDebug($"Intentionally swallowing sensitive message {body.GetType().Name} that shouldn't be sent to Omukade.");
                 return false;
             }
 
@@ -165,7 +166,7 @@ namespace Rainier.NativeOmukadeConnector.Patches
 
             if (deckId != null && ReferenceGetters.collectionServiceReference != null)
             {
-                Plugin.SharedLogger.LogInfo("Packet includes a Deck ID; fetching deck details to inject SDM...");
+                Plugin.SharedLogger.LogDebug("Packet includes a Deck ID; fetching deck details to inject SDM...");
                 CollectionData deckListCollection = ReferenceGetters.collectionServiceReference.GetCollectionAsync(service: new PlatformInventoryService(WswCommon.ResolveClient(), null, null), deckId).Result;
 
                 SupplementalDataMessageV2 sdm = new SupplementalDataMessageV2 { DeckInformation = deckListCollection, OutfitInformation = InventoryService.currentOutfit, CurrentRegion = WswCommon.ResolveClient().CurrentRegion };
@@ -217,7 +218,7 @@ namespace Rainier.NativeOmukadeConnector.Patches
                 string screenName = ManagerSingleton<LoginManager>.instance.loginData.UserData.screen_name;
 
                 System.Threading.Thread.Sleep(250 /*ms*/);
-                Plugin.SharedLogger.LogMessage($"Sending SDM[screenname={screenName},playerid={parentClient.AccountId}]");
+                Plugin.SharedLogger.LogDebug($"Sending SDM[screenname={screenName},playerid={parentClient.AccountId}]");
                 try
                 {
                     WswCommon.ForceIsConnectedOnWsw(parentClient);
