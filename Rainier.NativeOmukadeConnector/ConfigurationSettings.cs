@@ -31,5 +31,6 @@ namespace Rainier.NativeOmukadeConnector
         public bool DumpManifestFileUrl = false;
         public bool AskServerForImplementedCards = false;
         public bool ShowManagerLoadingStatus = false;
+        public bool EnableVerboseClientLogging = false;
     }
 }

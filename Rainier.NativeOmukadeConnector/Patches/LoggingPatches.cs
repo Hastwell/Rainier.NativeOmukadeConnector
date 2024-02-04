@@ -12,6 +12,8 @@ namespace Rainier.NativeOmukadeConnector.Patches
     [HarmonyPatch(typeof(TPCI.Networking.DefaultNetworkController), nameof(DefaultNetworkController.ClientSetupTask))]
     internal static class NetworkController_UseRealLoggers
     {
+        static bool Setup() => Plugin.Settings.EnableVerboseClientLogging;
+
         [HarmonyPatch]
         [HarmonyPrefix]
         static void UseRealLoggers(ref ILogger iLogger, ref IClientLogger platformLogger, ref Action<string> rainierSdkLog)

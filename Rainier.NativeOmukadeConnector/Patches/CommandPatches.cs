@@ -38,7 +38,7 @@ namespace Rainier.NativeOmukadeConnector.Patches
         {
             if(body is SupplementalDataMessageV2 || body is GetOnlineFriends || body is GetImplementedExpandedCardsV1)
             {
-                Plugin.SharedLogger.LogInfo($"Forcing {body.GetType().Name} to be processed as JSON");
+                Plugin.SharedLogger.LogDebug($"Forcing {body.GetType().Name} to be processed as JSON");
                 serializer = WswCommon.JsonCodec;
             }
         }
