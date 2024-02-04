@@ -84,14 +84,14 @@ namespace Rainier.NativeOmukadeConnector.Patches
         /// <typeparam name="T"></typeparam>
         /// <param name="client"></param>
         /// <param name="message"></param>
-        internal static void InjectUpsockMessage<T>(Client client, T message) where T : class
+        internal static void InjectUpsockMessage<T>(IClient client, T message) where T : class
             => InjectUpsockMessage<T>(Traverse.Create(client).Field("_ws").GetValue(), message);
 
         /// <summary>
         /// Forces the WebsocketWrapper to think it's connected for purposes of WebsocketWrapper.SendCommand. If hooking WebsocketClient.OnOpen, this field is not yet set and messages will fail to send.
         /// </summary>
         /// <param name="client"></param>
-        internal static void ForceIsConnectedOnWsw(Client client)
+        internal static void ForceIsConnectedOnWsw(IClient client)
             => Traverse.Create(client).Field("_ws").Field("_connected").SetValue(true);
     }
 
