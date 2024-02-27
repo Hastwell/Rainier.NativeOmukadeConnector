@@ -1,4 +1,6 @@
-﻿/*************************************************************************
+﻿#if FALSE
+// This doens't really seem to be used, and my method equals doesn't seem to work...?
+/*************************************************************************
 * Rainier Native Omukade Connector
 * (c) 2022 Hastwell/Electrosheep Networks 
 * 
@@ -66,3 +68,4 @@ namespace Rainier.NativeOmukadeConnector.Patches
         }
     }
 }
+#endif
