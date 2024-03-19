@@ -20,9 +20,9 @@
 using HarmonyLib;
 using Newtonsoft.Json;
 using Omukade.Cheyenne.CustomMessages;
-using Platform.Sdk;
-using Platform.Sdk.Stomp;
-using Platform.Sdk.Util;
+using ClientNetworking;
+using ClientNetworking.Stomp;
+using ClientNetworking.Util;
 using Rainier.NativeOmukadeConnector.Messages;
 using System;
 using System.Collections.Concurrent;

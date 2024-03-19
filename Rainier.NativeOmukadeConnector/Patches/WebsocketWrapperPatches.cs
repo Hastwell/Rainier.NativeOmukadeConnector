@@ -20,14 +20,14 @@ using _Rainier.Scripts.Managers.StartUp;
 using HarmonyLib;
 using Newtonsoft.Json;
 using Omukade.Cheyenne.CustomMessages;
-using Platform.Sdk;
-using Platform.Sdk.Codecs;
-using Platform.Sdk.Models;
-using Platform.Sdk.Models.GameServer;
-using Platform.Sdk.Models.Matchmaking;
-using Platform.Sdk.Models.Query;
-using Platform.Sdk.Models.User;
-using Platform.Sdk.Models.WebSocket;
+using ClientNetworking;
+using ClientNetworking.Codecs;
+using ClientNetworking.Models;
+using ClientNetworking.Models.GameServer;
+using ClientNetworking.Models.Matchmaking;
+using ClientNetworking.Models.Query;
+using ClientNetworking.Models.User;
+using ClientNetworking.Models.WebSocket;
 using Rainier.NativeOmukadeConnector.Messages;
 using RainierClientSDK;
 using RainierClientSDK.Inventory;
@@ -54,11 +54,11 @@ namespace Rainier.NativeOmukadeConnector.Patches
     internal static class WswCommon
     {
         internal static Assembly platformSdkAssembly = typeof(WebSocketSettings).Assembly;
-        internal static Type wswType = platformSdkAssembly.GetType("Platform.Sdk.WebsocketWrapper");
+        internal static Type wswType = platformSdkAssembly.GetType("ClientNetworking.WebsocketWrapper");
 
         internal static MethodInfo _SendCommandGeneric = wswType.GetMethod("SendCommand", BindingFlags.Instance | BindingFlags.Public);
 
-        internal static ICodec JsonCodec = (ICodec) platformSdkAssembly.GetType("Platform.Sdk.Codecs.CodecUtil").GetMethod("Codec", BindingFlags.Static | BindingFlags.Public).Invoke(null, new object[] { SerializationFormat.JSON });
+        internal static ICodec JsonCodec = (ICodec) platformSdkAssembly.GetType("ClientNetworking.Codecs.CodecUtil").GetMethod("Codec", BindingFlags.Static | BindingFlags.Public).Invoke(null, new object[] { SerializationFormat.JSON });
 
         internal static object? wswInstance = null;
 
@@ -103,10 +103,10 @@ namespace Rainier.NativeOmukadeConnector.Patches
     {
         static IEnumerable<MethodBase> TargetMethods()
         {
-            return Enumerable.Repeat(WswCommon.platformSdkAssembly.GetType("Platform.Sdk.HttpRouter").GetMethod("WebsocketEndpoint", BindingFlags.Instance | BindingFlags.Public), 1);
+            return Enumerable.Repeat(WswCommon.platformSdkAssembly.GetType("ClientNetworking.HttpRouter").GetMethod("WebsocketEndpoint", BindingFlags.Instance | BindingFlags.Public), 1);
         }
 
-        static bool Prefix(Platform.Sdk.Route ____route, ref Uri __result)
+        static bool Prefix(ClientNetworking.Route ____route, ref Uri __result)
         {
             string endpointToUse = Plugin.Settings.OmukadeEndpoint + "/websocket/v1/external/stomp";
             Plugin.SharedLogger.LogDebug($"Rewriting Websocket route from \"{____route.WebsocketUrl}\" to \"{endpointToUse}\"");
@@ -128,7 +128,7 @@ namespace Rainier.NativeOmukadeConnector.Patches
                 typeof(ProposeDirectMatch),
                 typeof(AcceptDirectMatch),
 
-                typeof(Platform.Sdk.Models.Account.SessionUpdatePayload),
+                typeof(ClientNetworking.Models.Account.SessionUpdatePayload),
                 typeof(SessionStart),
             };
 
@@ -139,7 +139,7 @@ namespace Rainier.NativeOmukadeConnector.Patches
         [HarmonyPatch]
         public static bool InjectSdmMessagesToMatchmakingMessages(object __instance, ref object command, ref object body)
         {
-            if (body is Platform.Sdk.Models.Account.SessionUpdatePayload || body is SessionStart)
+            if (body is ClientNetworking.Models.Account.SessionUpdatePayload || body is SessionStart)
             {
                 Plugin.SharedLogger.LogDebug($"Intentionally swallowing sensitive message {body.GetType().Name} that shouldn't be sent to Omukade.");
                 return false;
@@ -167,7 +167,7 @@ namespace Rainier.NativeOmukadeConnector.Patches
             if (deckId != null && ReferenceGetters.collectionServiceReference != null)
             {
                 Plugin.SharedLogger.LogDebug("Packet includes a Deck ID; fetching deck details to inject SDM...");
-                CollectionData deckListCollection = ReferenceGetters.collectionServiceReference.GetCollectionAsync(service: new PlatformInventoryService(WswCommon.ResolveClient(), null, null), deckId).Result;
+                CollectionData deckListCollection = ReferenceGetters.collectionServiceReference.GetCollectionAsync(service: new PlatformInventoryService(WswCommon.ResolveClient(), null), deckId).Result;
 
                 SupplementalDataMessageV2 sdm = new SupplementalDataMessageV2 { DeckInformation = deckListCollection, OutfitInformation = InventoryService.currentOutfit, CurrentRegion = WswCommon.ResolveClient().CurrentRegion };
                 WswCommon.InjectUpsockMessage(__instance, sdm);
@@ -196,11 +196,11 @@ namespace Rainier.NativeOmukadeConnector.Patches
 
             // result is WebsocketClient, a private type
             Type wsOpenEventHandlerType = WswCommon.platformSdkAssembly
-            .GetType("Platform.Sdk.WebsocketClient")
+            .GetType("ClientNetworking.WebsocketClient")
             .GetNestedType("WebSocketOpenEventHandler");
 
             EventInfo onOpenEvent = WswCommon.platformSdkAssembly
-            .GetType("Platform.Sdk.WebsocketClient")
+            .GetType("ClientNetworking.WebsocketClient")
             .GetEvent("OnOpen");
 
             Client parentClient = Traverse.Create(__instance).Field("_dispatcher").GetValue<Delegate>().Target as Client;

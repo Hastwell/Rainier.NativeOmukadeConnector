@@ -17,7 +17,7 @@
 **************************************************************************/
 
 using HarmonyLib;
-using Platform.Sdk;
+using ClientNetworking;
 using RainierClientSDK.source.Friend.Implementations;
 using System;
 using System.Collections.Generic;
@@ -25,7 +25,7 @@ using System.Reflection;
 using System.Text;
 using System.Threading.Tasks;
 using System.Threading;
-using Platform.Sdk.Models.Friend;
+using ClientNetworking.Models.Friend;
 using System.Collections.Concurrent;
 using Rainier.NativeOmukadeConnector.Messages;
 using System.Linq;

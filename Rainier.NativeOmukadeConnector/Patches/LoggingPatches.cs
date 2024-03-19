@@ -1,5 +1,5 @@
 ﻿using HarmonyLib;
-using Platform.Sdk;
+using ClientNetworking;
 using SharedLogicUtils.source.Logging;
 using SharedLogicUtils.source.Logging.Implementations;
 using System;

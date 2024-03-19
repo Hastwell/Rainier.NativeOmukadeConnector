@@ -18,8 +18,8 @@
 
 using HarmonyLib;
 using Omukade.Cheyenne.CustomMessages;
-using Platform.Sdk;
-using Platform.Sdk.Codecs;
+using ClientNetworking;
+using ClientNetworking.Codecs;
 using Rainier.NativeOmukadeConnector.Messages;
 using System;
 using System.Collections.Generic;
