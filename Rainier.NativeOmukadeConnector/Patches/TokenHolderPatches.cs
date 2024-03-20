@@ -13,7 +13,7 @@ namespace Rainier.NativeOmukadeConnector.Patches
     {
         static IEnumerable<MethodBase> TargetMethods()
         {
-            return Enumerable.Repeat(WswCommon.platformSdkAssembly.GetType("Platform.Sdk.TokenHolder").GetMethod("AddWebsocketUpgradeHeaders", BindingFlags.Instance | BindingFlags.Public), 1);
+            return Enumerable.Repeat(WswCommon.platformSdkAssembly.GetType("ClientNetworking.TokenHolder").GetMethod("AddWebsocketUpgradeHeaders", BindingFlags.Instance | BindingFlags.Public), 1);
         }
 
         [HarmonyTranspiler]
