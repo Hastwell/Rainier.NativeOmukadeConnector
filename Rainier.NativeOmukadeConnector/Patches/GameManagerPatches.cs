@@ -57,10 +57,10 @@ namespace Rainier.NativeOmukadeConnector.Patches
             }
         }
 
-        public static void RenderInitializingManagers(StartupScreenText sst, List<Tuple<int, ManagerBase>> notLoadedManagers, List<Tuple<int, ManagerBase>> loadingManagers, List<Tuple<int, ManagerBase>> initializedManagers)
+        public static void RenderInitializingManagers(StartupScreenText sst, List<ManagerWithErrorCode> notLoadedManagers, List<ManagerWithErrorCode> loadingManagers, List<ManagerWithErrorCode> initializedManagers)
         {
             const string CLONE_SUFFIX = "(Clone)";
-            string transformManagerTupleToName(Tuple<int, ManagerBase> manager) => manager.Item2.name.Replace(CLONE_SUFFIX, string.Empty);
+            string transformManagerTupleToName(ManagerWithErrorCode manager) => manager.ManagerObject.name.Replace(CLONE_SUFFIX, string.Empty);
 
             string textToDisplay = $"NOT LOADED ({notLoadedManagers.Count}) :: {string.Join(" - ", notLoadedManagers.Select(transformManagerTupleToName))}\nLOADING ({loadingManagers.Count}) :: {string.Join(" - ", loadingManagers.Select(transformManagerTupleToName))}\nLOADED ({initializedManagers.Count}) :: {string.Join(" - ", initializedManagers.Select(transformManagerTupleToName))}\n";
 
