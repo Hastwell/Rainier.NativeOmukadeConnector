@@ -28,7 +28,7 @@ namespace Rainier.NativeOmukadeConnector
     [BepInPlugin(PluginInfo.PLUGIN_GUID, PluginInfo.PLUGIN_NAME, PluginInfo.PLUGIN_VERSION)]
     public class Plugin : BaseUnityPlugin
     {
-        internal const string VERSION_STRING = "Native Omukade Connector \"NOC\" 2.1.3 (\"Auditioning Apple Rev3\")";
+        internal const string VERSION_STRING = "Native Omukade Connector \"NOC\" 2.1.4 (\"Auditioning Apple Rev4\")";
         internal const string OMUKADE_VERSION = "Omukade Cheyenne-EX";
         internal const string CONFIG_FILENAME = "config-noc.json";
 
